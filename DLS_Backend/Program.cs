@@ -1,15 +1,21 @@
 using DLS_Backend.utility;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load environment variables from .env file
+Env.Load();
+
+
+// Get JWT secret from environment variables
+var jwtSecret = Env.GetString("JWT_SECRET");
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// Tilføj JwtService til containeren
-builder.Services.AddSingleton<JwtService>(new JwtService("2b13d563f605b3bb6b5f43ec95a2aaeef1d780049d91d62e0d7c04d70d46de44"));
-
+builder.Services.AddSingleton<JwtService>(new JwtService(jwtSecret));
 
 var app = builder.Build();
 
@@ -28,16 +34,16 @@ var summaries = new[]
 };
 
 
-// Opret en ny endpoint til at generere JWT-token
+// Endpoint for testing generating a token - only for testing purposes
 app.MapGet("/generate-token", (JwtService jwtService) => 
     {
-        // Generer et JWT-token med en fiktiv bruger-id
+        // Generating a token with a fictive GUID
         string token = jwtService.GenerateToken("f79330ab-c0bd-4bf8-97f2-37718917f2c9");
 
-        // Log token til konsollen
+        // Console log the token
         Console.WriteLine($"Generated JWT token: {token}");
 
-        // Returner det genererede token som en HTTP-respons
+        // Returns the generated token as a HTTP-respons
         return Results.Ok(new { token });
     })
     .WithName("GenerateToken")
