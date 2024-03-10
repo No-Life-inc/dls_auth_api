@@ -1,3 +1,4 @@
+using Azure.Core;
 using DLS_Backend.Controller;
 using DLS_Backend.Models;
 using DLS_Backend.utility;
@@ -37,16 +38,16 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/register", async (string firstName, string lastName, string email, string password, string guid, DbContextSetup context) =>
+app.MapPost("/register", async (RegisterRequest request, DbContextSetup context) =>
 {
-    var hashedPassword = hash.Hash(password); // Hash the password before storing
+    var hashedPassword = hash.Hash(request.password); // Hash the password before storing
     var user = new User
     {
-        first_name = firstName,
-        last_name = lastName,
-        email = email,
+        first_name = request.first_name,
+        last_name = request.last_name,
+        email = request.email,
         password = hashedPassword, // Store the hashed password
-        guid = guid, 
+        guid = request.guid, 
         created_at = DateTime.UtcNow // Set the created time
     };
     context.Users.Add(user);
@@ -56,14 +57,14 @@ app.MapPost("/register", async (string firstName, string lastName, string email,
 .WithOpenApi();
 
 
-app.MapPost("/login", async (string email, string password, DbContextSetup context, JwtService jwtService) =>
+app.MapPost("/login", async (LoginRequest Request, DbContextSetup context, JwtService jwtService) =>
 {
-    var user = await context.Users.FirstOrDefaultAsync(u => u.email == email);
+    var user = await context.Users.FirstOrDefaultAsync(u => u.email == Request.email);
     if (user == null)
     {
         return Results.NotFound("User not found");
     }
-    if (hash.Verify(password, user.password))
+    if (hash.Verify(Request.password, user.password))
     {
         var token = jwtService.GenerateToken(user.guid);
         return Results.Ok(new { token });
@@ -85,6 +86,5 @@ app.MapGet("/generate-token", (JwtService jwtService) =>
         return Results.Ok(new { token });
     }).WithName("GenerateToken")
     .WithOpenApi();
-
 
 app.Run();
