@@ -1,6 +1,6 @@
 @DLS_Backend_HostAddress = http://localhost:5012
 
-GET {{DLS_Backend_HostAddress}}/weatherforecast/
+GET {{DLS_Backend_HostAddress}}/encrypt/
 Accept: application/json
 
 ###

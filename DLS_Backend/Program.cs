@@ -1,7 +1,17 @@
+using DLS_Backend.Controller;
+using DLS_Backend.Models;
 using DLS_Backend.utility;
 using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+Hashing hash = new Hashing();
+
+builder.Services.AddDbContext<DbContextSetup>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 // Load environment variables from .env file
 Env.Load();
@@ -19,7 +29,6 @@ builder.Services.AddSingleton<JwtService>(new JwtService(jwtSecret));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -28,11 +37,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapPost("/register", async (string firstName, string lastName, string email, string password, string guid, DbContextSetup context) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
+    var hashedPassword = hash.Hash(password); // Hash the password before storing
+    var user = new User
+    {
+        first_name = firstName,
+        last_name = lastName,
+        email = email,
+        password = hashedPassword, // Store the hashed password
+        guid = guid, // Assign a new Guid
+        created_at = DateTime.UtcNow // Set the created time
+    };
+    context.Users.Add(user);
+    await context.SaveChangesAsync(); // Save changes in the DB context
+    return Results.Created($"/users/{user.id}", user); // Return the created user object and the location header
+}).WithName("Encryption")
+.WithOpenApi();
 
 // Endpoint for testing generating a token - only for testing purposes
 app.MapGet("/generate-token", (JwtService jwtService) => 
@@ -45,32 +66,8 @@ app.MapGet("/generate-token", (JwtService jwtService) =>
 
         // Returns the generated token as a HTTP-respons
         return Results.Ok(new { token });
-    })
-    .WithName("GenerateToken")
+    }).WithName("GenerateToken")
     .WithOpenApi();
 
-
-
-
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
