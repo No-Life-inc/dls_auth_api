@@ -21,19 +21,20 @@ public class UserController : ControllerBase
     {
         var newUser = new User
         {
-            Name = userInput.Name,
-            Password = _hashing.Hash(userInput.Password), 
-            Email = userInput.Email
+            first_name = userInput.first_name,
+            last_name = userInput.last_name,
+            password = _hashing.Hash(userInput.password), 
+            email = userInput.email
         };
         _context.Users.Add(newUser);
         await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetUser), new { id = newUser.Id }, newUser);
+        return CreatedAtAction(nameof(GetUser), new { id = newUser.id }, newUser);
     }
     
     [HttpGet("{email}")]
     public async Task<IActionResult> GetUser(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.email == email);
         if (user == null)
         {
             return NotFound();

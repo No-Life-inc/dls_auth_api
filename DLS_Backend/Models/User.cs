@@ -3,15 +3,17 @@ namespace DLS_Backend.Models;
 
 public partial class User
 {
-    public int Id { get; set; }
+    public int id { get; set; }
 
-    public Guid? Guid { get; set; }
+    public string guid { get; set; }
 
-    public string Name { get; set; } = null!;
-
-    public string Password { get; set; } = null!;
+    public string first_name { get; set; } = null!;
     
-    public DateTime? CreatedAt { get; set; }
+    public string last_name { get; set; } = null!;
 
-    public string Email { get; set; } = null!;
+    public string password { get; set; } = null!;
+    
+    public DateTime? created_at { get; set; }
+
+    public string email { get; set; } = null!;
 }

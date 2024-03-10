@@ -25,13 +25,13 @@ public partial class DlsUsersContext : DbContext
     {
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Users__3214EC0732BBF347");
-
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Email).HasMaxLength(255);
-            entity.Property(e => e.Guid).HasDefaultValueSql("(newid())");
-            entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Password).HasMaxLength(255);
+            entity.HasKey(e => e.id).HasName("PK__Users__3214EC0732BBF347");
+            entity.Property(e => e.created_at).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.email).HasMaxLength(255);
+            entity.Property(e => e.guid).HasMaxLength(255);
+            entity.Property(e => e.first_name).HasMaxLength(255);
+            entity.Property(e => e.last_name).HasMaxLength(255);
+            entity.Property(e => e.password).HasMaxLength(255);
         });
 
         OnModelCreatingPartial(modelBuilder);
