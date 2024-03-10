@@ -12,8 +12,4 @@ public class Hashing
         return BCrypt.Net.BCrypt.Verify(password, hash);
     }
     
-    
-    
-    
-    
 }

@@ -46,13 +46,30 @@ app.MapPost("/register", async (string firstName, string lastName, string email,
         last_name = lastName,
         email = email,
         password = hashedPassword, // Store the hashed password
-        guid = guid, // Assign a new Guid
+        guid = guid, 
         created_at = DateTime.UtcNow // Set the created time
     };
     context.Users.Add(user);
     await context.SaveChangesAsync(); // Save changes in the DB context
     return Results.Created($"/users/{user.id}", user); // Return the created user object and the location header
 }).WithName("Encryption")
+.WithOpenApi();
+
+
+app.MapPost("/login", async (string email, string password, DbContextSetup context, JwtService jwtService) =>
+{
+    var user = await context.Users.FirstOrDefaultAsync(u => u.email == email);
+    if (user == null)
+    {
+        return Results.NotFound("User not found");
+    }
+    if (hash.Verify(password, user.password))
+    {
+        var token = jwtService.GenerateToken(user.guid);
+        return Results.Ok(new { token });
+    }
+    return Results.Unauthorized();
+}).WithName("Login")
 .WithOpenApi();
 
 // Endpoint for testing generating a token - only for testing purposes
