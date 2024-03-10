@@ -1,13 +1,20 @@
-var builder = WebApplication.CreateBuilder(args);
+using DLS_Backend.Controller;
+using DLS_Backend.Models;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+var builder = WebApplication.CreateBuilder(args);
+Hashing hash = new Hashing();
+
+builder.Services.AddDbContext<DbContextSetup>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -16,29 +23,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
+app.MapPost("/register", async (string name, string email, string password, DbContextSetup context) =>
     {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast")
+    var hashedPassword = hash.Hash(password); // Hash the password before storing
+    var user = new User
+    {
+        Name = name,
+        Email = email,
+        Password = hashedPassword, // Store the hashed password
+        Guid = Guid.NewGuid(), // Assign a new Guid
+        CreatedAt = DateTime.UtcNow // Set the created time
+    };
+
+    context.Users.Add(user);
+    await context.SaveChangesAsync(); // Save changes in the DB context
+
+    return Results.Created($"/users/{user.Id}", user); // Return the created user object and the location header
+}).WithName("Encryption")
     .WithOpenApi();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
