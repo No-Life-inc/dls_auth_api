@@ -8,11 +8,20 @@ public class JwtService
 {
     private readonly string _jwtSecret;
 
+    /// <summary>
+    /// Constructor for the JwtService
+    /// </summary>
+    /// <param name="jwtSecret"></param>
     public JwtService(string jwtSecret)
     {
         _jwtSecret = jwtSecret;
     }
 
+    /// <summary>
+    /// Generates a JWT token for the user with the given id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public string GenerateToken(string id)
     {
         var tokenHandler = new JwtSecurityTokenHandler();

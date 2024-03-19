@@ -26,6 +26,10 @@ public class RabbitMQService
             arguments: null);
     }
 
+    /// <summary>
+    /// Sends a message to the RabbitMQ server
+    /// </summary>
+    /// <param type="string" name="message"></param>
     public void SendMessage(string message)
     {
         var body = Encoding.UTF8.GetBytes(message);

@@ -1,4 +1,3 @@
-using Azure.Core;
 using DLS_Backend.Controller;
 using DLS_Backend.Models;
 using DLS_Backend.utility;
@@ -36,6 +35,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 
 app.MapPost("/register", async (RegisterRequest request, DbContextSetup context) =>
 {
