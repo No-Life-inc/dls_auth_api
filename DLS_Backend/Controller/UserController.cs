@@ -10,12 +10,21 @@ public class UserController : ControllerBase
     private Hashing _hashing;
 
 
+    /// <summary>
+    /// Constructor for the UserController
+    /// </summary>
+    /// <param name="context"></param>
     public UserController(DbContextSetup context)
     {
         _context = context;
         _hashing = new Hashing();
     }
     
+    /// <summary>
+    /// Creates a new user in the database
+    /// </summary>
+    /// <param name="userInput"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<IActionResult> CreateUser([FromBody] User userInput)
     {
@@ -31,6 +40,11 @@ public class UserController : ControllerBase
         return CreatedAtAction(nameof(GetUser), new { id = newUser.id }, newUser);
     }
     
+    /// <summary>
+    /// Gets a user from the database by email
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
     [HttpGet("{email}")]
     public async Task<IActionResult> GetUser(string email)
     {

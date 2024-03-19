@@ -6,21 +6,42 @@ namespace DLS_Backend.Models;
 
 public partial class DlsUsersContext : DbContext
 {
+    /// <summary>
+    /// Constructor for the DlsUsersContext
+    /// </summary>
     public DlsUsersContext()
     {
     }
 
+    /// <summary>
+    /// Constructor for the DlsUsersContext with options
+    /// </summary>
+    /// <param name="options"></param>
     public DlsUsersContext(DbContextOptions<DlsUsersContext> options)
         : base(options)
     {
     }
 
+    /// <summary>
+    /// Users table
+    /// </summary>
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=DLS_Users;User Id=Developer;Password=Dev123;TrustServerCertificate=True;");
+    /// <summary>
+    /// OnConfiguring method for the DlsUsersContext to connect to the database using the connection string from the environment variables
+    /// </summary>
+    /// <param name="optionsBuilder"></param>
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlServer(
+        $"Server={Environment.GetEnvironmentVariable("DB_SERVER")};" +
+                    $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
+                    $"User Id={Environment.GetEnvironmentVariable("DB_USER")};" +
+                    $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
+                    $"TrustServerCertificate=True;");
 
+    /// <summary>
+    /// OnModelCreating method for the DlsUsersContext to define the model for the Users table
+    /// </summary>
+    /// <param name="modelBuilder"></param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>(entity =>
@@ -37,5 +58,9 @@ public partial class DlsUsersContext : DbContext
         OnModelCreatingPartial(modelBuilder);
     }
 
+    /// <summary>
+    /// OnModelCreatingPartial method for the DlsUsersContext to define the model for the Users table
+    /// </summary>
+    /// <param name="modelBuilder"></param>
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
