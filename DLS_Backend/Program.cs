@@ -9,7 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 Hashing hash = new Hashing();
 
 builder.Services.AddDbContext<DbContextSetup>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
@@ -65,6 +64,9 @@ app.MapPost("/register", async (RegisterRequest request, DbContextSetup context)
         guid = request.guid, 
         created_at = DateTime.UtcNow // Set the created time
     };
+    var rabbitMQService = new RabbitMQService();
+    rabbitMQService.SendMessage("Hello, World!");
+    rabbitMQService.Close();
     context.Users.Add(user);
     await context.SaveChangesAsync(); // Save changes in the DB context
     return Results.Created($"/users/{user.id}", user); // Return the created user object and the location header
