@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DLS_Backend.Migrations
 {
     [DbContext(typeof(DlsUsersContext))]
-    [Migration("20240310130041_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240320190057_TestUsers")]
+    partial class TestUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
