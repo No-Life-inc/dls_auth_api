@@ -36,8 +36,8 @@ public partial class DlsUsersContext : DbContext
                     $"Database={Environment.GetEnvironmentVariable("DB_NAME")};" +
                     $"User Id={Environment.GetEnvironmentVariable("DB_USER")};" +
                     $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
-                    $"TrustServerCertificate=True;");
-
+                    "TrustServerCertificate=True;");
+    
     /// <summary>
     /// OnModelCreating method for the DlsUsersContext to define the model for the Users table
     /// </summary>

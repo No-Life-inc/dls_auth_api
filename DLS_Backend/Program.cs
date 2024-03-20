@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DLS_Backend.Controller;
 using DLS_Backend.Models;
 using DLS_Backend.utility;
@@ -63,24 +64,29 @@ app.MapPost("/register", async (RegisterRequest request, DbContextSetup context)
         guid = request.guid, 
         created_at = DateTime.UtcNow // Set the created time
     };
-    var rabbitMQService = new RabbitMQService();
-    rabbitMQService.SendMessage("Hello, World!");
-    rabbitMQService.Close();
     context.Users.Add(user);
     await context.SaveChangesAsync(); // Save changes in the DB context
+    
+    user.password = null; // Remove the password from the user object
+    
+    string userJson = JsonSerializer.Serialize(user);
+    
+    var rabbitMQService = new RabbitMQService();
+    rabbitMQService.SendMessage(userJson);
+    rabbitMQService.Close(); 
+
     return Results.Created($"/users/{user.id}", user); // Return the created user object and the location header
 }).WithName("Encryption")
 .WithOpenApi();
 
-
-app.MapPost("/login", async (LoginRequest Request, DbContextSetup context, JwtService jwtService) =>
+app.MapPost("/login", async (LoginRequest request, DbContextSetup context, JwtService jwtService) =>
 {
-    var user = await context.Users.FirstOrDefaultAsync(u => u.email == Request.email);
+    var user = await context.Users.FirstOrDefaultAsync(u => u.email == request.email);
     if (user == null)
     {
         return Results.NotFound("User not found");
     }
-    if (hash.Verify(Request.password, user.password))
+    if (hash.Verify(request.password, user.password))
     {
         var token = jwtService.GenerateToken(user.guid);
         return Results.Ok(new { token });

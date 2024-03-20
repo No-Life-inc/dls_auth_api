@@ -24,10 +24,10 @@ Create a .env in the root folder.
 - RABBITMQ_HOST='localhost'
 - RABBITMQ_USERNAME='user'
 - RABBITMQ_PASSWORD='password'
-- DB_SERVER='localhost'
-- DB_NAME='DLS_Users'
-- DB_USER='Developer'
-- DB_PASSWORD='Dev123'
+- DB_SERVER='localhost,1433'
+- DB_NAME='usersDb'
+- DB_USER='SA'
+- DB_PASSWORD='YourStrongPassword123'
 
 ## How To Run
 
@@ -43,11 +43,16 @@ For Visual Studio, open a terminal and run following each line seperate:
 Make sure to have dotnet installed.
 For Jetbrains Rider, open a terminal and run following each line seperate: 
 
+Make sure you have the Entity Framework installed
  - dotnet tool install --global dotnet-ef
  - dotnet ef --version
+You can add EntityFrameworkCore.Design like this, but you have to make sure it is version 8.2. anything after this might distrupt the EF at this point in time. 
  - dotnet add package Microsoft.EntityFrameworkCore.Design
- - dotnet ef migrations add InitialCreate
- - dotnet ef database update
+If you want to take the data from the database and create a migration file from it:
+ - dotnet ef migrations add YourMigrationName --context DlsUserContext
+To update the database with a migration file: 
+ - dotnet ef database update --context DlsUserContext
+If there are any error this code will help show what the mistake might be:
  - dotnet build
 
 ## Dependencies
