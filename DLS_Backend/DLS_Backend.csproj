@@ -20,8 +20,6 @@
         <PackageReference Include="RabbitMQ.Client" Version="6.8.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="DotNetEnv" Version="3.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
     </ItemGroup>
 
@@ -33,6 +31,7 @@
 
     <ItemGroup>
       <Folder Include="Entities\" />
+      <Folder Include="Migrations\" />
       <Folder Include="Models\" />
       <Folder Include="utils\" />
       <Folder Include="controller\" />

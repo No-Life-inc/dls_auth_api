@@ -14,7 +14,7 @@ public partial class User
 {
     public int id { get; set; }
     
-    public string guid { get; set; }
+    public Guid guid  { get; set; }
 
     public string first_name { get; set; } = null!;
     
@@ -40,7 +40,7 @@ public class RegisterRequest
     public string last_name { get; set; }
     public string email { get; set; }
     public string password { get; set; }
-    public string guid { get; set; }
+    public Guid guid { get; set; }
 }
 
 /// <summary>

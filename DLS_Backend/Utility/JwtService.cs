@@ -22,13 +22,13 @@ public class JwtService
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public string GenerateToken(string id)
+    public string GenerateToken(Guid id)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var tokenDescriptor = new SecurityTokenDescriptor()
         {
-            Subject = new ClaimsIdentity(new[] { new Claim("id", id) }),
+            Subject = new ClaimsIdentity(new[] { new Claim("id", id.ToString()) }),
             Expires = DateTime.UtcNow.AddMinutes(30),
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(Convert.FromBase64String(_jwtSecret)), SecurityAlgorithms.HmacSha256Signature)

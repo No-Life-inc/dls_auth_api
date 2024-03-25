@@ -1,22 +1,22 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+﻿# Use the ASP.NET base image for the runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5012
+EXPOSE 7266
 
+# Use the SDK image to build the application
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DLS_Backend/DLS_Backend.csproj", "DLS_Backend/"]
-RUN dotnet restore "DLS_Backend/DLS_Backend.csproj"
+COPY ["DLS_Backend.csproj", "./"]
+RUN dotnet restore "DLS_Backend.csproj"
 COPY . .
-WORKDIR "/src/DLS_Backend"
-RUN dotnet build "DLS_Backend.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "DLS_Backend.csproj" -c Release -o /app/build
 
+# Publish the application
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DLS_Backend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "DLS_Backend.csproj" -c Release -o /app/publish
 
+# Final stage/image for running the app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

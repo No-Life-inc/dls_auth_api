@@ -25,7 +25,7 @@ Create a .env in the root folder.
 - RABBITMQ_USERNAME='user'
 - RABBITMQ_PASSWORD='password'
 - DB_SERVER='localhost,1433'
-- DB_NAME='usersDb'
+- DB_BACKEND='usersDb'
 - DB_USER='SA'
 - DB_PASSWORD='YourStrongPassword123'
 

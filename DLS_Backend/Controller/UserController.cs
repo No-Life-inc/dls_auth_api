@@ -6,7 +6,7 @@ namespace DLS_Backend.Controller;
 
 public class UserController : ControllerBase
 {
-    private readonly DbContextSetup _context;
+    private readonly DlsUsersContext _context;
     private Hashing _hashing;
 
 
@@ -14,7 +14,7 @@ public class UserController : ControllerBase
     /// Constructor for the UserController
     /// </summary>
     /// <param name="context"></param>
-    public UserController(DbContextSetup context)
+    public UserController(DlsUsersContext context)
     {
         _context = context;
         _hashing = new Hashing();

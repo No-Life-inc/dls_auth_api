@@ -5,27 +5,25 @@ using DLS_Backend.utility;
 using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
-Hashing hash = new Hashing();
-
-builder.Services.AddDbContext<DbContextSetup>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DevConnection")));
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
-
 // Load environment variables from .env file
 Env.Load();
 
+var builder = WebApplication.CreateBuilder(args);
+Hashing hash = new Hashing();
 
-// Get JWT secret from environment variables
-var jwtSecret = Env.GetString("JWT_SECRET");
-
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<JwtService>(new JwtService(jwtSecret));
+builder.Services.AddHttpClient();
+builder.Services.AddSingleton(new JwtService(Env.GetString("JWT_SECRET")));
+builder.Services.AddDbContext<DlsUsersContext>(options =>
+    options.UseSqlServer(
+        $"Server={Environment.GetEnvironmentVariable("DB_SERVER")};" +
+        $"Database={Environment.GetEnvironmentVariable("DB_BACKEND")};" +
+        $"User Id={Environment.GetEnvironmentVariable("DB_USER")};" +
+        $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
+        "TrustServerCertificate=True;"
+    )
+);
 
 // Configure CORS policy
 builder.Services.AddCors(options =>
@@ -40,6 +38,22 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Migrate any pending changes to the database before running the app
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<DlsUsersContext>();
+        context.Database.Migrate(); // This will apply pending migrations
+    }
+    catch (Exception ex)
+    {
+        // Log errors or handle them as needed
+        throw;
+    }
+}
+
 // Enable CORS
 app.UseCors("AllowOrigin");
 
@@ -52,7 +66,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapPost("/register", async (RegisterRequest request, DbContextSetup context) =>
+app.MapPost("/register", async (RegisterRequest request, DlsUsersContext context) =>
 {
     var hashedPassword = hash.Hash(request.password); // Hash the password before storing
     var user = new User
@@ -79,7 +93,7 @@ app.MapPost("/register", async (RegisterRequest request, DbContextSetup context)
 }).WithName("Encryption")
 .WithOpenApi();
 
-app.MapPost("/login", async (LoginRequest request, DbContextSetup context, JwtService jwtService) =>
+app.MapPost("/login", async (LoginRequest request, DlsUsersContext context, JwtService jwtService) =>
 {
     var user = await context.Users.FirstOrDefaultAsync(u => u.email == request.email);
     if (user == null)
@@ -99,7 +113,7 @@ app.MapPost("/login", async (LoginRequest request, DbContextSetup context, JwtSe
 app.MapGet("/generate-token", (JwtService jwtService) => 
     {
         // Generating a token with a fictive GUID
-        string token = jwtService.GenerateToken("f79330ab-c0bd-4bf8-97f2-37718917f2c9");
+        string token = jwtService.GenerateToken(Guid.Parse("f79330ab-c0bd-4bf8-97f2-37718917f2c9"));
 
         // Console log the token
         Console.WriteLine($"Generated JWT token: {token}");

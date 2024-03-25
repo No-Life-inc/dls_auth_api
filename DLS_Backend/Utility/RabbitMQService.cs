@@ -15,9 +15,9 @@ public class RabbitMQService
     {
         _factory = new ConnectionFactory()
         {
-            HostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST"),
-            UserName = Environment.GetEnvironmentVariable("RABBITMQ_USERNAME"),
-            Password = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD")
+            HostName = Environment.GetEnvironmentVariable("RABBITURL"),
+            UserName = Environment.GetEnvironmentVariable("RABBITUSER"),
+            Password = Environment.GetEnvironmentVariable("RABBITPW")
         };
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
