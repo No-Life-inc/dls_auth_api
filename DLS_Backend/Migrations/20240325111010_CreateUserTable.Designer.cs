@@ -35,7 +35,7 @@ namespace DLS_Backend.Migrations
 
                     b.Property<DateTime?>("created_at")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
+                        .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("email")
