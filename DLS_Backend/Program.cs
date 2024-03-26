@@ -30,7 +30,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", corsbuilder =>
     {
-        corsbuilder.WithOrigins("http://localhost:8080") // Tilpas domænet til din frontend
+        corsbuilder.WithOrigins(Environment.GetEnvironmentVariable("FRONTENDURL")) // Tilpas domænet til din frontend
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
