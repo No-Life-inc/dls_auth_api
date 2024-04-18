@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     
     services:
+      
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+      
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
@@ -18,25 +25,26 @@ jobs:
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
-        options: >-
-          --health-cmd "bash -c 'echo select 1 | /opt/mssql-tools/bin/sqlcmd -S $MSSQL_HOST -U $MSSQL_USER -P $MSSQL_PASSWORD'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          steps:
-          - name: Set environment variables for MSSQL
-          run: |
-          echo "MSSQL_HOST=${{ secrets.INTERNAL_SERVER }}" >> $GITHUB_ENV
-          echo "MSSQL_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "MSSQL_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-      rabbitmq:
-        image: rabbitmq:3-management
-        ports:
-          - 5672:5672
-          - 15672:15672
 
     steps:
       - uses: actions/checkout@v2
+        
+      - name: Setup environment variables
+        run: |
+          echo "DB_SERVER=${{ secrets.INTERNAL_SERVER }}" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Start MSSQL with Custom Health Check
+        run: |
+          HEALTH_CMD="/opt/mssql-tools/bin/sqlcmd -Q 'SELECT 1' -S \$DB_SERVER -U \$DB_USER -P \$DB_PASSWORD -b || exit 1"
+          docker run --name mssql_custom \
+            --env ACCEPT_EULA=Y --env SA_PASSWORD=\$DB_PASSWORD \
+            --publish 1433:1433 \
+            --health-cmd="\$HEALTH_CMD" \
+            --health-interval=10s --health-timeout=5s --health-retries=3 \
+            --detach \
+            mcr.microsoft.com/mssql/server:2019-latest
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
