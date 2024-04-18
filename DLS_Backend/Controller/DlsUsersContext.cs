@@ -7,13 +7,6 @@ namespace DLS_Backend.Controller;
 public partial class DlsUsersContext : DbContext
 {
     /// <summary>
-    /// Constructor for the DlsUsersContext
-    /// </summary>
-    public DlsUsersContext()
-    {
-    }
-
-    /// <summary>
     /// Constructor for the DlsUsersContext with options
     /// </summary>
     /// <param name="options"></param>
@@ -26,18 +19,6 @@ public partial class DlsUsersContext : DbContext
     /// Users table
     /// </summary>
     public virtual DbSet<User> Users { get; set; }
-    
-    /// <summary>
-    /// OnConfiguring method for the DlsUsersContext to connect to the database using the connection string from the environment variables
-    /// </summary>
-    /// <param name="optionsBuilder"></param>
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => 
-        optionsBuilder.UseSqlServer(
-            $"Server={Environment.GetEnvironmentVariable("DB_SERVER")};" +
-            $"Database={Environment.GetEnvironmentVariable("DB_BACKEND")};" +
-            $"User Id={Environment.GetEnvironmentVariable("DB_USER")};" +
-            $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
-            "TrustServerCertificate=True;");
 
     /// <summary>
     /// OnModelCreating method for the DlsUsersContext to define the model for the Users table

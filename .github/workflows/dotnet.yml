@@ -1,0 +1,58 @@
+﻿name: .NET Core CI
+
+on:
+  push:
+    branches: [ development, main]
+  pull_request:
+    branches: [ development, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ACCEPT_EULA: Y
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "echo 'select 1' | /opt/mssql-tools/bin/sqlcmd"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.203'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          RABBITUSER: ${{ secrets.RABBITUSER }}
+          RABBITPW: ${{ secrets.RABBITPW }}
+          RABBITURL: ${{ secrets.RABBITURL }}
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_BACKEND: ${{ secrets.DB_BACKEND }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FRONTENDURL: ${{ secrets.FRONTENDURL }}
+        
+        run: dotnet test --no-restore --verbosity normal

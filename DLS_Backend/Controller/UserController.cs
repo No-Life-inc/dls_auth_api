@@ -45,7 +45,7 @@ public class UserController : ControllerBase
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    [HttpGet("{email}")]
+    [HttpGet("v1/get-user/{email}", Name = "GetUser")]
     public async Task<IActionResult> GetUser(string email)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.email == email);
