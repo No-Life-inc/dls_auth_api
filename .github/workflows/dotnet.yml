@@ -19,7 +19,7 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -Q 'SELECT 1' || exit 1"
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -Q 'SELECT 1' -S ${{ secrets.INTERNAL_SERVER }} -U ${{ secrets.DB_USER }} -P ${{ secrets.DB_PASSWORD }} -b || exit 1"
           --health-interval 20s
           --health-timeout 10s
           --health-retries 6
