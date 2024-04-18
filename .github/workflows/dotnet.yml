@@ -15,14 +15,14 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          ACCEPT_EULA: Y
+          ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "echo 'select 1' | /opt/mssql-tools/bin/sqlcmd"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd "/opt/mssql-tools/bin/sqlcmd -Q 'SELECT 1' || exit 1"
+          --health-interval 20s
+          --health-timeout 10s
+          --health-retries 6
       rabbitmq:
         image: rabbitmq:3-management
         ports:
