@@ -19,10 +19,16 @@ jobs:
         ports:
           - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -Q 'SELECT 1' -S ${{ secrets.INTERNAL_SERVER }} -U ${{ secrets.DB_USER }} -P ${{ secrets.DB_PASSWORD }} -b || exit 1"
-          --health-interval 20s
-          --health-timeout 10s
-          --health-retries 6
+          --health-cmd "bash -c 'echo select 1 | /opt/mssql-tools/bin/sqlcmd -S $MSSQL_HOST -U $MSSQL_USER -P $MSSQL_PASSWORD'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          steps:
+          - name: Set environment variables for MSSQL
+          run: |
+          echo "MSSQL_HOST=${{ secrets.INTERNAL_SERVER }}" >> $GITHUB_ENV
+          echo "MSSQL_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
+          echo "MSSQL_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
       rabbitmq:
         image: rabbitmq:3-management
         ports:
