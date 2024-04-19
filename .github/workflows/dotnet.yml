@@ -36,8 +36,8 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_USER: ${{ secrets.DB_USER }}
+          SA_PASSWORD: $DB_PASSWORD
+          DB_USER: $DB_USER
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
@@ -55,8 +55,10 @@ jobs:
         with:
           dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
           
-      - name: Check Encoded DB Password
-        run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
+      - name: Check database connectivity
+        run: |
+          apt-get update && apt-get install -y telnet
+          telnet $DB_SERVER 1433
 
       - name: Install dependencies
         run: dotnet restore
@@ -66,5 +68,4 @@ jobs:
 
       - name: Test
       
-        
         run: dotnet test --no-restore --verbosity normal
