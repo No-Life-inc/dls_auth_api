@@ -49,8 +49,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        
-      
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
@@ -59,9 +57,6 @@ jobs:
           
       - name: Check Encoded DB Password
         run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
-
-      - name: Wait for SQL Server
-        run: dockerize -wait tcp://localhost:1433 -timeout 1m
 
       - name: Install dependencies
         run: dotnet restore
