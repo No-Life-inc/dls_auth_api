@@ -29,6 +29,8 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
             .Build();
+        
+        
 
         SetupEnvironmentVariables();
         InitializeTestDatabase(_configuration["DB_SERVER"], 
@@ -51,6 +53,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         var responseData = await response.Content.ReadAsStringAsync();
         var actualData = JsonConvert.DeserializeObject<User>(responseData);
         _output.WriteLine("Received response: " + responseData);
+        
         
         // Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -120,6 +123,17 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("RABBITUSER", _configuration["RABBITUSER"]);
         Environment.SetEnvironmentVariable("RABBITPW", _configuration["RABBITPW"]);
         Environment.SetEnvironmentVariable("RABBITURL", _configuration["RABBITURL"]);
+        
+        Console.WriteLine(_configuration["DB_SERVER"]);
+        Console.WriteLine(_configuration["DB_BACKEND"]);
+        Console.WriteLine(_configuration["DB_USER"]);
+        Console.WriteLine(_configuration["DB_PASSWORD"]);
+        Console.WriteLine(_configuration["JWT_SECRET"]);
+        Console.WriteLine(_configuration["FRONTENDURL"]);
+        Console.WriteLine(_configuration["RABBITUSER"]);
+        Console.WriteLine(_configuration["RABBITPW"]);
+        Console.WriteLine(_configuration["RABBITURL"]);
+        
     }
     
     private void InitializeTestDatabase(string server, string database, string user, string password)
