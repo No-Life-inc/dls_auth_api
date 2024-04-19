@@ -41,14 +41,6 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Wait for MSSQL to be ready
-        run: |
-          until /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U ${{ secrets.DB_USER }} -P ${{ secrets.DB_PASSWORD }} -Q "SELECT 1" &> /dev/null
-          do
-            echo "Waiting for MSSQL..."
-            sleep 1
-          done
-
       - name: Test
         env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
