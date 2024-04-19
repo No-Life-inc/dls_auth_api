@@ -23,11 +23,18 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_USER: ${{ secrets.DB_USER }}
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
-        options: --name mssql --hostname mssql
+        options: >-
+          --name mssql
+          --hostname mssql
+          --health-cmd="(/opt/mssql-tools/bin/sqlcmd -S localhost -U $DB_USER -P $DB_PASSWORD -Q \"SELECT 1\") || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v2
