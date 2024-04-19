@@ -17,17 +17,25 @@ jobs:
         ports:
           - 5672:5672
           - 15672:15672
+        options: --name rabbitmq --hostname rabbitmq
+      
+      
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ACCEPT_EULA: "Y"
+        ports:
+          - 1433:1433  # Default SQL Server port
+        options: --name mssql --hostname mssql
 
     steps:
       - uses: actions/checkout@v2
-        
-      # Start up sqlserver        
-      - run: docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=${{ secrets.DB_PASSWORD }}" -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0.203'  
+          dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
 
       - name: Install dependencies
         run: dotnet restore
