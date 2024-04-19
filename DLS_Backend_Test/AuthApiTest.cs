@@ -117,7 +117,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("DB_SERVER", _configuration["DB_SERVER"]);
         Environment.SetEnvironmentVariable("DB_BACKEND", _configuration["DB_BACKEND"]);
         Environment.SetEnvironmentVariable("DB_USER", _configuration["DB_USER"]);
-        Environment.SetEnvironmentVariable("DB_PASSWORD", "hej");
+        Environment.SetEnvironmentVariable("DB_PASSWORD", "hej2");
         Environment.SetEnvironmentVariable("JWT_SECRET", _configuration["JWT_SECRET"]);
         Environment.SetEnvironmentVariable("FRONTENDURL", _configuration["FRONTENDURL"]);
         Environment.SetEnvironmentVariable("RABBITUSER", _configuration["RABBITUSER"]);
