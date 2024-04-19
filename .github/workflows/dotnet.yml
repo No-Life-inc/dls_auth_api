@@ -19,7 +19,6 @@ jobs:
           - 15672:15672
         options: --name rabbitmq --hostname rabbitmq
       
-      
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
@@ -29,9 +28,11 @@ jobs:
         ports:
           - 1433:1433  # Default SQL Server port
         options: >-
-          --name mssql
-          --hostname mssql
-          --health-cmd /opt/mssql-tools/bin/sqlcmd -U sa -P $DB_PASSWORD -Q "SELECT 1" || exit 1
+          --name=mssql
+          --health-cmd="(/opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U $DB_USER -P $DB_PASSWORD -Q \"SELECT 1\") || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
       - uses: actions/checkout@v2
