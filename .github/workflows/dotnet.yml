@@ -8,11 +8,23 @@ on:
 
 jobs:
   build:
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      RABBITUSER: ${{ secrets.RABBITUSER }}
+      RABBITPW: ${{ secrets.RABBITPW }}
+      RABBITURL: ${{ secrets.RABBITURL }}
+      DB_SERVER: ${{ secrets.DB_SERVER }}
+      DB_BACKEND: ${{ secrets.DB_BACKEND }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      FRONTENDURL: ${{ secrets.FRONTENDURL }}
+      GITHUB_ACTIONS: true
+      
+      
     runs-on: ubuntu-latest
     
-    
-    
     services:
+      
       
       rabbitmq:
         image: rabbitmq:3-management
@@ -31,6 +43,8 @@ jobs:
           - 1433:1433  # Default SQL Server port
         options: >-
           --name=mssql
+        
+
 
 
     steps:
@@ -45,9 +59,9 @@ jobs:
           
       - name: Check Encoded DB Password
         run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
-      - name: Check Encoded DB User
-        run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
 
+      - name: Wait for SQL Server
+        run: dockerize -wait tcp://localhost:1433 -timeout 1m
 
       - name: Install dependencies
         run: dotnet restore
@@ -56,16 +70,6 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Test
-        env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          RABBITUSER: ${{ secrets.RABBITUSER }}
-          RABBITPW: ${{ secrets.RABBITPW }}
-          RABBITURL: ${{ secrets.RABBITURL }}
-          DB_SERVER: ${{ secrets.DB_SERVER }}
-          DB_BACKEND: ${{ secrets.DB_BACKEND }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          FRONTENDURL: ${{ secrets.FRONTENDURL }}
-          GITHUB_ACTIONS: true
+      
         
         run: dotnet test --no-restore --verbosity normal
