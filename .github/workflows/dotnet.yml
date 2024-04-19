@@ -47,7 +47,7 @@ jobs:
 
       - name: Wait for MSSQL to be ready
         run: |
-          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{ secrets.DB_PASSWORD }} -Q "SELECT 1" &> /dev/null
+          until /opt/mssql-tools/bin/sqlcmd -S mssql -U ${{ secrets.DB_USER }} -P ${{ secrets.DB_PASSWORD }} -Q "SELECT 1" &> /dev/null
           do
             echo "Waiting for MSSQL..."
             sleep 1
