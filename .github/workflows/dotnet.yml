@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    
+    
     services:
       
       rabbitmq:
@@ -29,18 +31,23 @@ jobs:
           - 1433:1433  # Default SQL Server port
         options: >-
           --name=mssql
-          --health-cmd="(/opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U $DB_USER -P $DB_PASSWORD -Q \"SELECT 1\") || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
+
 
     steps:
       - uses: actions/checkout@v2
+        
+      
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
+          
+      - name: Check Encoded DB Password
+        run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
+      - name: Check Encoded DB User
+        run: echo "${{ secrets.DB_USER }}" | sha256sum
+
 
       - name: Install dependencies
         run: dotnet restore
