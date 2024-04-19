@@ -46,7 +46,7 @@ jobs:
       - name: Check Encoded DB Password
         run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
       - name: Check Encoded DB User
-        run: echo "${{ secrets.DB_USER }}" | sha256sum
+        run: echo "${{ secrets.DB_PASSWORD }}" | sha256sum
 
 
       - name: Install dependencies
