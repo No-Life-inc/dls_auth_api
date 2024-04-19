@@ -16,7 +16,7 @@ jobs:
       DB_SERVER: ${{ secrets.DB_SERVER }}
       DB_BACKEND: ${{ secrets.DB_BACKEND }}
       DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PASSWORD: "hej"
       FRONTENDURL: ${{ secrets.FRONTENDURL }}
       GITHUB_ACTIONS: true
       
@@ -35,7 +35,7 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: $DB_PASSWORD
+          SA_PASSWORD: "hej"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
