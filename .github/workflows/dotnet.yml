@@ -58,7 +58,7 @@ jobs:
       - name: Check database connectivity
         run: |
           apt-get update && apt-get install -y telnet
-          telnet $DB_SERVER 1433
+          telnet mssql 1433
 
       - name: Install dependencies
         run: dotnet restore
