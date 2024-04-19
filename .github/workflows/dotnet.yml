@@ -55,10 +55,11 @@ jobs:
         with:
           dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
           
-      - name: Check database connectivity
+      - name: Check database connectivity using Telnet
         run: |
-          apt-get update && apt-get install -y telnet
-          telnet mssql 1433
+          sudo apt-get update
+          sudo apt-get install -y telnet
+          telnet $DB_SERVER 1433
 
       - name: Install dependencies
         run: dotnet restore
