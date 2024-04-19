@@ -52,5 +52,6 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           FRONTENDURL: ${{ secrets.FRONTENDURL }}
+          GITHUB_ACTIONS: true
         
         run: dotnet test --no-restore --verbosity normal

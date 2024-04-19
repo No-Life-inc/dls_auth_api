@@ -19,9 +19,12 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     public ApiTests(WebApplicationFactory<Program> factory, ITestOutputHelper output)
     {
         _output = output;
-        _output.WriteLine("Current directory: " + Environment.CurrentDirectory);
-        DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { "../../../.env" }, ignoreExceptions: false));
-
+        
+        if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") != "true")
+        {
+            // Only load the .env file when not running on GitHub Actions
+            DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { "../../../.env" }, ignoreExceptions: false));
+        }
         // Set up configuration to read from the environment variables
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
