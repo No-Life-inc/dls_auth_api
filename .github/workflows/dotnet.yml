@@ -24,8 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     
     services:
-      
-      
+
       rabbitmq:
         image: rabbitmq:3-management
         ports:
@@ -37,7 +36,6 @@ jobs:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           SA_PASSWORD: $DB_PASSWORD
-          DB_USER: $DB_USER
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
@@ -54,12 +52,6 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
-          
-      - name: Check database connectivity using Telnet
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y telnet
-          telnet mssql,1433
 
       - name: Install dependencies
         run: dotnet restore
