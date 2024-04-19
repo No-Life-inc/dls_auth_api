@@ -109,9 +109,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
                     actualData.email == email);
     }
     
-    
-    
-    
     private void SetupEnvironmentVariables()
     {
         Environment.SetEnvironmentVariable("DB_SERVER", _configuration["DB_SERVER"]);
