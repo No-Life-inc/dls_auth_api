@@ -33,17 +33,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-    
+
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '8.0.203'
+          dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
 
       - name: Install dependencies
         run: dotnet restore
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
+
+      - name: Wait for MSSQL to be ready
+        run: |
+          until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{ secrets.DB_PASSWORD }} -Q "SELECT 1" &> /dev/null
+          do
+            echo "Waiting for MSSQL..."
+            sleep 1
+          done
 
       - name: Test
         env:
