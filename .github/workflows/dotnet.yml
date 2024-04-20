@@ -44,20 +44,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Wait for SQL Server to start
-        run: |
-          wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
-          chmod +x wait-for-it.sh
-          ./wait-for-it.sh mssql:1433 --timeout=30 -- echo "SQL Server is up"
-        
-
       - name: Check SQL Server logs
         run: docker logs mssql
       
       
       - name: Test SQL Server connection
         run: |
-          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P hej -Q "SELECT 1"
+          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P "YourNewPassword123" -Q "SELECT 1"
           
 
       - name: Setup .NET Core
