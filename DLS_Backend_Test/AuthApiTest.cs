@@ -122,11 +122,23 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("RABBITPW", _configuration["RABBITPW"]);
         Environment.SetEnvironmentVariable("RABBITURL", _configuration["RABBITURL"]);
         
+        Console.WriteLine("Environment variables set up");
+        Console.WriteLine($"DB_SERVER: {_configuration["DB_SERVER"]}");
+        Console.WriteLine($"DB_BACKEND: {_configuration["DB_BACKEND"]}");
+        Console.WriteLine($"DB_USER: {_configuration["DB_USER"]}");
+        Console.WriteLine($"DB_PASSWORD: {_configuration["DB_PASSWORD"]}");
+        Console.WriteLine($"JWT_SECRET: {_configuration["JWT_SECRET"]}");
+        Console.WriteLine($"FRONTENDURL: {_configuration["FRONTENDURL"]}");
+        Console.WriteLine($"RABBITUSER: {_configuration["RABBITUSER"]}");
+        Console.WriteLine($"RABBITPW: {_configuration["RABBITPW"]}");
+        Console.WriteLine($"RABBITURL: {_configuration["RABBITURL"]}");
+        
     }
     
     private void InitializeTestDatabase(string server, string database, string user, string password)
     {
         var connectionString = $"Server={server};Database=master;User={user};Password={password};TrustServerCertificate=True;";
+        Console.WriteLine(connectionString);
         using var connection = new SqlConnection(connectionString);
         connection.Open();
         var command = connection.CreateCommand();
