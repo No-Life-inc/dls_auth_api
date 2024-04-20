@@ -34,7 +34,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         InitializeTestDatabase(_configuration["DB_SERVER"], 
                                 _configuration["DB_BACKEND"], 
                                 _configuration["DB_USER"], 
-                                "hej");
+                                _configuration["DB_PASSWORD"]);
         
         _client = factory.CreateClient();
         _client.BaseAddress = new Uri("http://localhost:5012/v1/");
