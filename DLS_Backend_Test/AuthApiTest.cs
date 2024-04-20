@@ -115,22 +115,12 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("DB_SERVER", _configuration["DB_SERVER"]);
         Environment.SetEnvironmentVariable("DB_BACKEND", _configuration["DB_BACKEND"]);
         Environment.SetEnvironmentVariable("DB_USER", _configuration["DB_USER"]);
-        Environment.SetEnvironmentVariable("DB_PASSWORD", "hej3");
+        Environment.SetEnvironmentVariable("DB_PASSWORD", _configuration["DB_PASSWORD"]);
         Environment.SetEnvironmentVariable("JWT_SECRET", _configuration["JWT_SECRET"]);
         Environment.SetEnvironmentVariable("FRONTENDURL", _configuration["FRONTENDURL"]);
         Environment.SetEnvironmentVariable("RABBITUSER", _configuration["RABBITUSER"]);
         Environment.SetEnvironmentVariable("RABBITPW", _configuration["RABBITPW"]);
         Environment.SetEnvironmentVariable("RABBITURL", _configuration["RABBITURL"]);
-        
-        Console.WriteLine(_configuration["DB_SERVER"]);
-        Console.WriteLine(_configuration["DB_BACKEND"]);
-        Console.WriteLine(_configuration["DB_USER"]);
-        Console.WriteLine(_configuration["DB_PASSWORD"]);
-        Console.WriteLine(_configuration["JWT_SECRET"]);
-        Console.WriteLine(_configuration["FRONTENDURL"]);
-        Console.WriteLine(_configuration["RABBITUSER"]);
-        Console.WriteLine(_configuration["RABBITPW"]);
-        Console.WriteLine(_configuration["RABBITURL"]);
         
     }
     

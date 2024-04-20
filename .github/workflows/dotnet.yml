@@ -13,7 +13,7 @@ jobs:
       RABBITUSER: "testRabbit"
       RABBITPW: "testRabbitPassword"
       RABBITURL: rabbit
-      DB_SERVER: mssql
+      DB_SERVER: 127.0.0.1,1433
       DB_BACKEND: test
       DB_USER: testUser
       DB_PASSWORD: "testpw"
