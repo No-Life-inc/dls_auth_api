@@ -44,15 +44,23 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
+      - name: Wait for SQL Server to start
+        run: |
+          wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
+          chmod +x wait-for-it.sh
+          ./wait-for-it.sh mssql:1433 --timeout=60 -- echo "SQL Server is up"
 
       - name: Test SQL Server connection
         run: |
           docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P hej -Q "SELECT 1"
 
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
+
+ 
       - name: Install dependencies
         run: dotnet restore
 
