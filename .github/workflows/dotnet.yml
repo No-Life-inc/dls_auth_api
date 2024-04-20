@@ -39,7 +39,7 @@ jobs:
       
       - name: Test SQL Server connection
         run: |
-          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P "YourNewPassword123" -Q "SELECT 1"
+          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P "${{ secrets.DB_PASSWORD }}" -Q "SELECT 1"
           
 
       - name: Setup .NET Core
