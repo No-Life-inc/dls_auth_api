@@ -39,7 +39,7 @@ jobs:
           - 1433:1433  # Default SQL Server port
         options: >-
           --name=mssql
-          --hostname=mssql  # Set the hostname to match the service name
+          --hostname=mssql
 
     steps:
       - uses: actions/checkout@v2
