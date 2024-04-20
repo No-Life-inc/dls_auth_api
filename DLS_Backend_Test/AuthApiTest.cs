@@ -138,6 +138,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     private void InitializeTestDatabase(string server, string database, string user, string password)
     {
         var connectionString = $"Server={server};Database=master;User={user};Password={password};TrustServerCertificate=True;";
+        Console.WriteLine(password);
         Console.WriteLine(connectionString);
         using var connection = new SqlConnection(connectionString);
         connection.Open();
