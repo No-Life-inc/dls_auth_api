@@ -33,7 +33,7 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: "testpw"
+          SA_PASSWORD: "YourNewPassword"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
