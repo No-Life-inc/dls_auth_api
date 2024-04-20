@@ -16,7 +16,7 @@ jobs:
       DB_SERVER: mssql,1433  # Use the service name here
       DB_BACKEND: test
       DB_USER: SA
-      DB_PASSWORD: "testpw"
+      DB_PASSWORD: "YourNewPassword123"
       FRONTENDURL: ${{ secrets.FRONTENDURL }}
       GITHUB_ACTIONS: true
     
@@ -33,7 +33,7 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: "YourNewPassword"
+          SA_PASSWORD: "YourNewPassword123"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
