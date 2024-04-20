@@ -142,6 +142,8 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Console.WriteLine(connectionString);
         using var connection = new SqlConnection(connectionString);
         connection.Open();
+        Console.WriteLine(password);
+        Console.WriteLine(connectionString);
         var command = connection.CreateCommand();
         command.CommandText = $@"IF DB_ID('{database}') IS NOT NULL BEGIN ALTER DATABASE {database} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;DROP DATABASE {database};END CREATE DATABASE {database};"; 
         command.ExecuteNonQuery();
