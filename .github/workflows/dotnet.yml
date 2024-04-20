@@ -10,8 +10,8 @@ jobs:
   build:
     env:
       JWT_SECRET: 1234567890
-      RABBITUSER: "testRabbit"
-      RABBITPW: "testRabbitPassword"
+      RABBITUSER: user
+      RABBITPW: password
       RABBITURL: 127.0.0.1  # Use the service name here
       DB_SERVER: 127.0.0.1,1433  # Use the service name here
       DB_BACKEND: test
