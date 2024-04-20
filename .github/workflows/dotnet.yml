@@ -9,14 +9,14 @@ on:
 jobs:
   build:
     env:
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      RABBITUSER: ${{ secrets.RABBITUSER }}
-      RABBITPW: ${{ secrets.RABBITPW }}
-      RABBITURL: ${{ secrets.RABBITURL }}
-      DB_SERVER: ${{ secrets.DB_SERVER }}
-      DB_BACKEND: ${{ secrets.DB_BACKEND }}
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_PASSWORD: "hej"
+      JWT_SECRET: 1234567890
+      RABBITUSER: "testRabbit"
+      RABBITPW: "testRabbitPassword"
+      RABBITURL: rabbit
+      DB_SERVER: mssql
+      DB_BACKEND: test
+      DB_USER: testUser
+      DB_PASSWORD: "testpw"
       FRONTENDURL: ${{ secrets.FRONTENDURL }}
       GITHUB_ACTIONS: true
       

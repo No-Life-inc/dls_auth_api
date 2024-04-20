@@ -29,8 +29,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         _configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
             .Build();
-        
-        
 
         SetupEnvironmentVariables();
         InitializeTestDatabase(_configuration["DB_SERVER"], 
