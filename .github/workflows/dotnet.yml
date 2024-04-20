@@ -13,7 +13,7 @@ jobs:
       RABBITUSER: "testRabbit"
       RABBITPW: "testRabbitPassword"
       RABBITURL: rabbitmq  # Use the service name here
-      DB_SERVER: mssql,1433  # Use the service name here
+      DB_SERVER: 127.0.0.1,1433  # Use the service name here
       DB_BACKEND: test
       DB_USER: SA
       DB_PASSWORD: "YourNewPassword123"
