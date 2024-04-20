@@ -14,7 +14,7 @@ jobs:
       RABBITPW: password
       RABBITURL: 127.0.0.1  # Use the service name here
       DB_SERVER: 127.0.0.1,1433  # Use the service name here
-      DB_BACKEND: test
+      DB_BACKEND: test_database
       DB_USER: SA
       DB_PASSWORD: "YourNewPassword123"
       FRONTENDURL: ${{ secrets.FRONTENDURL }}
