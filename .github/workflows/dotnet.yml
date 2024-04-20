@@ -15,7 +15,7 @@ jobs:
       RABBITURL: rabbitmq  # Use the service name here
       DB_SERVER: mssql,1433  # Use the service name here
       DB_BACKEND: test
-      DB_USER: testUser
+      DB_USER: SA
       DB_PASSWORD: "testpw"
       FRONTENDURL: ${{ secrets.FRONTENDURL }}
       GITHUB_ACTIONS: true
@@ -33,7 +33,7 @@ jobs:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
         env:
-          SA_PASSWORD: "hej"
+          SA_PASSWORD: "testpw"
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433  # Default SQL Server port
