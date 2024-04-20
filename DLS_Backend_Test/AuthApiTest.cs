@@ -54,8 +54,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Console.WriteLine("Received response: " + responseData);
         var actualData = JsonConvert.DeserializeObject<User>(responseData);
         
-     
-        
         // Assert
         Assert.True(response.IsSuccessStatusCode);
         Assert.True(actualData?.email == _registerRequest.email && 
@@ -78,8 +76,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Console.WriteLine("Received response: " + responseData);
         var actualData = JsonConvert.DeserializeObject(responseData);
         
-        
-        
         //Assert
         Assert.True(response.IsSuccessStatusCode);
         Assert.True(actualData != null);
@@ -95,8 +91,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         _output.WriteLine("Received response: " + responseData);
         Console.WriteLine("Received response: " + responseData);
         var actualData = JsonConvert.DeserializeObject(responseData);
-        
-        
         
         //Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -114,8 +108,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         _output.WriteLine("Received response: " + responseData);
         Console.WriteLine("Received response: " + responseData);
         var actualData = JsonConvert.DeserializeObject<User>(responseData);
-        
-        
         
         //Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -135,18 +127,6 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Environment.SetEnvironmentVariable("RABBITUSER", _configuration["RABBITUSER"]);
         Environment.SetEnvironmentVariable("RABBITPW", _configuration["RABBITPW"]);
         Environment.SetEnvironmentVariable("RABBITURL", _configuration["RABBITURL"]);
-        
-        Console.WriteLine("Environment variables set up");
-        Console.WriteLine($"DB_SERVER: {_configuration["DB_SERVER"]}");
-        Console.WriteLine($"DB_BACKEND: {_configuration["DB_BACKEND"]}");
-        Console.WriteLine($"DB_USER: {_configuration["DB_USER"]}");
-        Console.WriteLine($"DB_PASSWORD: {_configuration["DB_PASSWORD"]}");
-        Console.WriteLine($"JWT_SECRET: {_configuration["JWT_SECRET"]}");
-        Console.WriteLine($"FRONTENDURL: {_configuration["FRONTENDURL"]}");
-        Console.WriteLine($"RABBITUSER: {_configuration["RABBITUSER"]}");
-        Console.WriteLine($"RABBITPW: {_configuration["RABBITPW"]}");
-        Console.WriteLine($"RABBITURL: {_configuration["RABBITURL"]}");
-        
     }
     
     private void InitializeTestDatabase(string server, string database, string user, string password)

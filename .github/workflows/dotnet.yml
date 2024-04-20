@@ -57,13 +57,13 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --verbosity normal
         env:
-          JWT_SECRET: 2b13d563f605b3bb6b5f43ec95a2aaeef1d780049d91d62e0d7c04d70d46de44
-          RABBITUSER: guest
-          RABBITPW: guest
-          RABBITURL: 127.0.0.1  # Use the service name here
-          DB_SERVER: 127.0.0.1,1433  # Use the service name here
-          DB_BACKEND: test_database
-          DB_USER: SA
+          JWT_SECRET: ${{ secrets.JWT_SECRET }} 
+          RABBITUSER: ${{ secrets.RABBITUSER }}
+          RABBITPW: ${{ secrets.RABBITPW }}
+          RABBITURL: ${{ secrets.RABBITURL }}
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_BACKEND: ${{ secrets.DB_BACKEND }}
+          DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           FRONTENDURL: ${{ secrets.FRONTENDURL }}
           GITHUB_ACTIONS: true
