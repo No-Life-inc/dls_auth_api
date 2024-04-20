@@ -49,6 +49,10 @@ jobs:
         with:
           dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
 
+      - name: Test SQL Server connection
+        run: |
+          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P hej -Q "SELECT 1"
+
       - name: Install dependencies
         run: dotnet restore
 
