@@ -50,8 +50,9 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await _client.PostAsync("register", content);
         var responseData = await response.Content.ReadAsStringAsync();
         var actualData = JsonConvert.DeserializeObject<User>(responseData);
-        _output.WriteLine("Received response: " + responseData);
         
+        _output.WriteLine("Received response: " + responseData);
+        Console.WriteLine("Received response: " + responseData);
         
         // Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -71,7 +72,9 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await _client.PostAsync("login", content);
         var responseData = await response.Content.ReadAsStringAsync();
         var actualData = JsonConvert.DeserializeObject(responseData);
+        
         _output.WriteLine("Received response: " + responseData);
+        Console.WriteLine("Received response: " + responseData);
         
         //Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -85,7 +88,9 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         var response = await _client.GetAsync("generate-token");
         var responseData = await response.Content.ReadAsStringAsync();
         var actualData = JsonConvert.DeserializeObject(responseData);
+        
         _output.WriteLine("Received response: " + responseData);
+        Console.WriteLine("Received response: " + responseData);
         
         //Assert
         Assert.True(response.IsSuccessStatusCode);
@@ -102,6 +107,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         var actualData = JsonConvert.DeserializeObject<User>(responseData);
         
         _output.WriteLine("Received response: " + responseData);
+        Console.WriteLine("Received response: " + responseData);
         
         //Assert
         Assert.True(response.IsSuccessStatusCode);
