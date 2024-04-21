@@ -60,9 +60,10 @@ public class AuthApiController : ControllerBase
         user.password = null; // Remove the password from the user object
     
         string userJson = JsonSerializer.Serialize(user);
+        string queueName = "UserQueue";
     
-        var rabbitMQService = new RabbitMQService();
-        rabbitMQService.SendMessage(userJson);
+        var rabbitMQService = new RabbitMQService(queueName);
+        rabbitMQService.SendMessage(userJson, queueName);
         rabbitMQService.Close();
 
         return CreatedAtRoute("GetUser", new { email = user.email }, user);
@@ -104,6 +105,29 @@ public class AuthApiController : ControllerBase
 
         // Returns the generated token as a HTTP-respons
         return Ok(new { token });
+    }
+    
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.email == request.email);
+        if (user == null)
+        {
+            return (IActionResult)Results.NotFound("User not found");
+        }
+        
+        if (hash.Verify(request.oldPassword, user.password))
+        {
+            user.password = hash.Hash(request.newPassword);
+            await _context.SaveChangesAsync();
+            string queueName = "changePasswordQueue";
+            
+            var rabbitMQService = new RabbitMQService(queueName);
+            rabbitMQService.SendMessage(JsonSerializer.Serialize(user.email), queueName);
+            rabbitMQService.Close();
+            return Ok();
+        }
+        return Unauthorized();
     }
     
 }
