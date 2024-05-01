@@ -28,6 +28,7 @@ Create a .env in the root folder.
 - DB_BACKEND='usersDb'
 - DB_USER='SA'
 - DB_PASSWORD='YourStrongPassword123'
+- FRONTENDURL='http://localhost:8080'
 
 ## How To Run
 
