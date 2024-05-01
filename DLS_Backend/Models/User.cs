@@ -25,6 +25,9 @@ public partial class User
     public DateTime? created_at { get; set; }
 
     public string email { get; set; } = null!;
+
+    // Add UserInfoSnapshot property
+    public UserInfo UserInfoSnapshot { get; set; }
 }
 
 /// <summary>
