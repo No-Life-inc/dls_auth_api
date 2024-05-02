@@ -4,6 +4,7 @@ using DLS_Backend.Controller;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DLS_Backend.Migrations
 {
     [DbContext(typeof(DlsUsersContext))]
-    partial class DlsUsersContextModelSnapshot : ModelSnapshot
+    [Migration("20240502120127_CreateViewForUserInfo")]
+    partial class CreateViewForUserInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

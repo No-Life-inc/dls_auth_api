@@ -32,12 +32,12 @@ namespace DLS_Backend.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "guid", "first_name", "last_name", "password", "email" },
-                values: new object[] { Guid.NewGuid(), "Zack", "Ottesen", "$2a$11$ehQatcIZKN5sEL9Z9e10belJSKQFD7ghaQmJER4wBKG7lEJQR.rvm", "zo@pyra.dk" });
+                values: new object[] { Guid.NewGuid(), "Zack", "Ottesen", "$2a$11$MI9PvYLWl0oZ5XqOrpJKYeT7.1MKd5OrNV/MMPuBsV4y8zdUB/Xtu", "zo@pyra.dk" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "guid", "first_name", "last_name", "password", "email" },
-                values: new object[] { Guid.NewGuid(), "John", "Doe", "$2a$11$EiQBIUoyFU6DSkanj1F/DOeS8fd3Mpwr8S3TB2iafVFoby6Innoxe", "jane.doe@example.com" }); 
+                values: new object[] { Guid.NewGuid(), "John", "Doe", "$2a$11$4q4IN1C.x46mHoPMPRSrZOfAEoO1nM9o8/DOv2GkUJJNM1Ji/DYUi", "jane.doe@example.com" }); 
         }
 
         /// <inheritdoc />
