@@ -91,7 +91,7 @@ public class AuthApiController : ControllerBase
         rabbitMQService.SendMessage(mergedJson);
         rabbitMQService.Close();
 
-        return CreatedAtRoute("GetUser", new { email = userInfo.Email }, user);
+        return StatusCode(201, mergedJson);
     }
     
     /// <summary>
