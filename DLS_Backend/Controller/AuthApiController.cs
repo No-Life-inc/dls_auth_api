@@ -39,17 +39,14 @@ public class AuthApiController : ControllerBase
     {
         var hashedPassword = hash.Hash(request.Password); // Hash the password before storing
 
-        var latestUserInfo = await _context.UserInfo
-            .Where(u => u.Email == request.Email)
-            .GroupBy(u => u.UserId)
-            .Select(g => g.OrderByDescending(u => u.created_at).First())
-            .FirstOrDefaultAsync();
+        var latestUserInfo = await _context.LatestUserInfosView
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
 
         if (latestUserInfo != null)
         {
             return BadRequest("User already exists");
         }
-        
+    
         var user = new User
         {   
             guid = request.guid,
@@ -63,17 +60,32 @@ public class AuthApiController : ControllerBase
             Email = request.Email,
             Password = hashedPassword, // Store the hashed password
             created_at = DateTime.UtcNow, // Set the created time
-            
+        
         };
         await _context.SaveChangesAsync(); // Save changes in the DB context
 
         userInfo.Password = null; // Remove the password from the user object
 
-        string userJson = JsonSerializer.Serialize(user);
-        string userInfoJson = JsonSerializer.Serialize(userInfo);
-        
-        string mergedJson = userJson + userInfoJson;
-        
+        var mergedObject = new
+        {
+            user = new
+            {
+                guid = user.guid,
+                created_at = user.created_at
+            },
+            userInfo = new
+            {
+                FirstName = userInfo.FirstName,
+                LastName = userInfo.LastName,
+                Email = userInfo.Email,
+                created_at = userInfo.created_at
+            }
+        };
+
+        string mergedJson = JsonSerializer.Serialize(mergedObject);
+    
+        Console.WriteLine(mergedJson);
+    
 
         var rabbitMQService = new RabbitMQService();
         rabbitMQService.SendMessage(mergedJson);
@@ -108,7 +120,7 @@ public class AuthApiController : ControllerBase
         if (hash.Verify(request.Password, latestUserInfo!.Password))
         {
             var token = _jwtService.GenerateToken(user.guid);
-            return Ok(new { token, user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName });
+            return Ok(new { token, user = new {user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
         }
         return Unauthorized();
     }
