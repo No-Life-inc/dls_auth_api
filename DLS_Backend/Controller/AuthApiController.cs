@@ -37,35 +37,49 @@ public class AuthApiController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var hashedPassword = hash.Hash(request.password); // Hash the password before storing
-        
-        var userCheck = await _context.Users.FirstOrDefaultAsync(u => u.email == request.email);
-        if (userCheck != null)
+        var hashedPassword = hash.Hash(request.Password); // Hash the password before storing
+
+        var latestUserInfo = await _context.UserInfo
+            .Where(u => u.Email == request.Email)
+            .GroupBy(u => u.UserId)
+            .Select(g => g.OrderByDescending(u => u.created_at).First())
+            .FirstOrDefaultAsync();
+
+        if (latestUserInfo != null)
         {
             return BadRequest("User already exists");
         }
         
         var user = new User
-        {
-            first_name = request.first_name,
-            last_name = request.last_name,
-            email = request.email,
-            password = hashedPassword, // Store the hashed password
-            guid = request.guid, 
-            created_at = DateTime.UtcNow // Set the created time
+        {   
+            guid = request.guid,
+            created_at = DateTime.UtcNow,
         };
-        _context.Users.Add(user);
+
+        var userInfo = new UserInfo
+        {
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Password = hashedPassword, // Store the hashed password
+            created_at = DateTime.UtcNow, // Set the created time
+            
+        };
         await _context.SaveChangesAsync(); // Save changes in the DB context
-    
-        user.password = null; // Remove the password from the user object
-    
+
+        userInfo.Password = null; // Remove the password from the user object
+
         string userJson = JsonSerializer.Serialize(user);
-    
+        string userInfoJson = JsonSerializer.Serialize(userInfo);
+        
+        string mergedJson = userJson + userInfoJson;
+        
+
         var rabbitMQService = new RabbitMQService();
-        rabbitMQService.SendMessage(userJson);
+        rabbitMQService.SendMessage(mergedJson);
         rabbitMQService.Close();
 
-        return CreatedAtRoute("GetUser", new { email = user.email }, user);
+        return CreatedAtRoute("GetUser", new { email = userInfo.Email }, user);
     }
     
     /// <summary>
@@ -76,15 +90,25 @@ public class AuthApiController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.email == request.email);
+        
+        var latestUserInfo = await _context.LatestUserInfosView
+            .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+        if (latestUserInfo == null)
+        {
+            return BadRequest("No userinfo was found");
+        }
+        
+        var user = await _context.Users.FindAsync(latestUserInfo!.UserId);
         if (user == null)
         {
-            return (IActionResult)Results.NotFound("User not found");
+            return BadRequest("No user was found");
         }
-        if (hash.Verify(request.password, user.password))
+
+        if (hash.Verify(request.Password, latestUserInfo!.Password))
         {
             var token = _jwtService.GenerateToken(user.guid);
-            return Ok(new { token });
+            return Ok(new { token, user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName });
         }
         return Unauthorized();
     }

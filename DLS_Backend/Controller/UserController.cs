@@ -1,4 +1,4 @@
-﻿using DLS_Backend.Models;
+﻿/*using DLS_Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,4 +55,4 @@ public class UserController : ControllerBase
         }
         return Ok(user);
     }
-}
+}*/
