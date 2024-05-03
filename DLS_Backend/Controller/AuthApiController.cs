@@ -48,10 +48,13 @@ public class AuthApiController : ControllerBase
         }
     
         var user = new User
-        {   
+        {
             guid = request.guid,
             created_at = DateTime.UtcNow,
         };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync(); // Save changes in the DB context to generate the id for the user
 
         var userInfo = new UserInfo
         {
@@ -60,8 +63,10 @@ public class AuthApiController : ControllerBase
             Email = request.Email,
             Password = hashedPassword, // Store the hashed password
             created_at = DateTime.UtcNow, // Set the created time
-        
+            UserId = user.id // Set the UserId to the id of the user
         };
+
+        _context.UserInfo.Add(userInfo);
         await _context.SaveChangesAsync(); // Save changes in the DB context
 
         userInfo.Password = null; // Remove the password from the user object
@@ -120,7 +125,7 @@ public class AuthApiController : ControllerBase
         if (hash.Verify(request.Password, latestUserInfo!.Password))
         {
             var token = _jwtService.GenerateToken(user.guid);
-            return Ok(new { token, user = new {user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
+            return Ok(new { token, user = new {userGuid = user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
         }
         return Unauthorized();
     }
