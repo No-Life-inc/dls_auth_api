@@ -20,7 +20,7 @@ This repo is divided into seperate folders with separate responsibilities:
 
 Create a .env in the root folder.
 
-- JWT_SECRET='2b13d563f605b3bb6b5f43ec95a2aaeef1d780049d91d62e0d7c04d70d46de44'
+- JWT_SECRET='MmIxM2Q1NjNmNjA1YjNiYjZiNWY0M2VjOTVhMmFhZWVmMWQ3ODAwNDlkOTFkNjJlMGQ3YzA0ZDcwZDQ2ZGU0NA=='
 - RABBITMQ_HOST='localhost'
 - RABBITMQ_USERNAME='user'
 - RABBITMQ_PASSWORD='password'
