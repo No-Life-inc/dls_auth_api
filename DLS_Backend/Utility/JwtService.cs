@@ -37,4 +37,30 @@ public class JwtService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+    
+    //validate token
+    public bool ValidateToken(string token)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(_jwtSecret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        try
+        {
+            tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken validatedToken);
+        }
+        catch (SecurityTokenException)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
 }

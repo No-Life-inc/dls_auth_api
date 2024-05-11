@@ -21,9 +21,9 @@ This repo is divided into seperate folders with separate responsibilities:
 Create a .env in the root folder.
 
 - JWT_SECRET='MmIxM2Q1NjNmNjA1YjNiYjZiNWY0M2VjOTVhMmFhZWVmMWQ3ODAwNDlkOTFkNjJlMGQ3YzA0ZDcwZDQ2ZGU0NA=='
-- RABBITMQ_HOST='localhost'
-- RABBITMQ_USERNAME='user'
-- RABBITMQ_PASSWORD='password'
+- RABBITURL='localhost'
+- RABBITUSER='user'
+- RABBITPW='password'
 - DB_SERVER='localhost,1434'
 - DB_BACKEND='usersDb'
 - DB_USER='SA'

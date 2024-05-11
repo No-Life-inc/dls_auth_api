@@ -8,9 +8,6 @@ public class RabbitMQService
     private readonly IConnection _connection;
     private readonly IModel _channel;
 
-    /// <summary>
-    /// Constructor for the RabbitMQService class that sets up the connection to the RabbitMQ server and creates a queue 
-    /// </summary>
     public RabbitMQService()
     {
         _factory = new ConnectionFactory()
@@ -21,24 +18,24 @@ public class RabbitMQService
         };
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-
-        _channel.QueueDeclare(queue: "UserQueue",
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
     }
 
     /// <summary>
     /// Sends a message to the RabbitMQ server
     /// </summary>
     /// <param type="string" name="message"></param>
-    public void SendMessage(string message)
+    public void SendMessage(string queueName, string message) 
     {
+        _channel.QueueDeclare(queue: queueName,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+
         var body = Encoding.UTF8.GetBytes(message);
 
         _channel.BasicPublish(exchange: "",
-            routingKey: "UserQueue",
+            routingKey: queueName,
             basicProperties: null,
             body: body);
     }

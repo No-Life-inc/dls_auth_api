@@ -93,7 +93,8 @@ public class AuthApiController : ControllerBase
     
 
         var rabbitMQService = new RabbitMQService();
-        rabbitMQService.SendMessage(mergedJson);
+        string queueName = "UserQueue";
+        rabbitMQService.SendMessage(queueName,mergedJson);
         rabbitMQService.Close();
 
         return StatusCode(201, mergedJson);
@@ -128,6 +129,81 @@ public class AuthApiController : ControllerBase
             return Ok(new { token, user = new {userGuid = user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
         }
         return Unauthorized();
+    }
+    
+    //edit user
+    [HttpPut("update/{userGuid}")]
+    public async Task<IActionResult> EditUser([FromRoute] Guid userGuid, [FromBody] EditUserRequest request)
+    {
+        if (!_jwtService.ValidateToken(request.token))
+        {
+            return Unauthorized();
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.guid == userGuid);
+        if (user == null)
+        {
+            return BadRequest("No user was found");
+        }
+
+        var latestUserInfo = await _context.UserInfo
+            .Where(u => u.UserId == user.id)
+            .OrderByDescending(u => u.created_at)
+            .FirstOrDefaultAsync();
+
+        // Check if the email is already taken
+        if (!string.IsNullOrEmpty(request.Email))
+        {
+            var emailExists = await _context.LatestUserInfosView.AnyAsync(u => u.Email == request.Email);
+            if (emailExists)
+            {
+                return BadRequest("Email is already taken");
+            }
+        }
+
+        // Create a new UserInfo object with the updated information
+        var newUserInfo = new UserInfo
+        {
+            FirstName = !string.IsNullOrEmpty(request.FirstName) ? request.FirstName : latestUserInfo.FirstName,
+            LastName = !string.IsNullOrEmpty(request.LastName) ? request.LastName : latestUserInfo.LastName,
+            Email = !string.IsNullOrEmpty(request.Email) ? request.Email : latestUserInfo.Email,
+            Password = latestUserInfo.Password, // Use the password from the latest UserInfo record
+            UserId = user.id,
+            created_at = DateTime.UtcNow
+        };
+
+        _context.UserInfo.Add(newUserInfo);
+
+        var numberOfChanges = await _context.SaveChangesAsync();
+        if (numberOfChanges > 0)
+        {
+            var mergedObject = new
+            {
+                user = new
+                {
+                    guid = user.guid,
+                    created_at = user.created_at
+                },
+                userInfo = new
+                {
+                    FirstName = newUserInfo.FirstName,
+                    LastName = newUserInfo.LastName,
+                    Email = newUserInfo.Email,
+                    created_at = newUserInfo.created_at
+                }
+            };
+
+            var rabbitMQService = new RabbitMQService();
+            string queueName = "UserUpdateQueue";
+            rabbitMQService.SendMessage(queueName,JsonSerializer.Serialize(mergedObject));
+            rabbitMQService.Close();
+        }
+        else
+        {
+            return StatusCode(500, "Failed to update the database. Please check your connection and try again.");
+        }
+
+        return Ok("User was updated");
     }
     
     /// <summary>
