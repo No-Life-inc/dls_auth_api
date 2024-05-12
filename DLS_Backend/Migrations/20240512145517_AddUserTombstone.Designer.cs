@@ -4,6 +4,7 @@ using DLS_Backend.Controller;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DLS_Backend.Migrations
 {
     [DbContext(typeof(DlsUsersContext))]
-    partial class DlsUsersContextModelSnapshot : ModelSnapshot
+    [Migration("20240512145517_AddUserTombstone")]
+    partial class AddUserTombstone
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,7 @@ namespace DLS_Backend.Migrations
                     b.Property<DateTime>("created_at")
                         .HasColumnType("datetime2");
 
-                    b.ToTable("LatestUserInfosView", (string)null);
+                    b.ToTable("LatestUserInfosView");
                 });
 
             modelBuilder.Entity("DLS_Backend.Models.User", b =>
@@ -68,7 +71,7 @@ namespace DLS_Backend.Migrations
                     b.HasKey("id")
                         .HasName("PK__Users__3214EC0732BBF347");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("DLS_Backend.Models.UserInfo", b =>
@@ -113,7 +116,7 @@ namespace DLS_Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserInfo", (string)null);
+                    b.ToTable("UserInfo");
                 });
 
             modelBuilder.Entity("DLS_Backend.Models.UserTombstone", b =>
@@ -129,7 +132,7 @@ namespace DLS_Backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("UserTombstones", (string)null);
+                    b.ToTable("UserTombstones");
                 });
 
             modelBuilder.Entity("DLS_Backend.Models.UserInfo", b =>

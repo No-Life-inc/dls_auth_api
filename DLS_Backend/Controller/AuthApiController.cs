@@ -206,6 +206,76 @@ public class AuthApiController : ControllerBase
         return Ok("User was updated");
     }
     
+    
+    //delete user but adding a tombstone
+    [HttpDelete("delete/{userGuid}")]
+    public async Task<IActionResult> DeleteUser([FromRoute] Guid userGuid, [FromBody] DeleteUserRequest request)
+    {
+        if (!_jwtService.ValidateToken(request.token))
+        {
+            return Unauthorized();
+        }
+        //get the user and the latest userinfo by guid
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.guid == userGuid);
+        if (user == null)
+        {
+            return BadRequest("No user was found");
+        }
+
+        var latestUserInfo = await _context.LatestUserInfosView
+            .FirstOrDefaultAsync(u => u.UserId == user.id);
+
+        //need to validate the password
+        if (!hash.Verify(request.password, latestUserInfo.Password))
+        {
+            return Unauthorized();
+        }
+        
+        var userTombstone = new UserTombstone
+        {
+            UserId = user.id,
+            IsDeleted = true,
+            DeletionDate = DateTime.UtcNow
+        };
+        
+
+        _context.UserTombstones.Add(userTombstone);
+        await _context.SaveChangesAsync(); 
+
+
+        /*var numberOfChanges = await _context.SaveChangesAsync();
+        if (numberOfChanges > 0)
+        {
+            var mergedObject = new
+            {
+                user = new
+                {
+                    guid = user.guid,
+                    created_at = user.created_at
+                },
+                userInfo = new
+                {
+                    FirstName = latestUserInfo.FirstName,
+                    LastName = latestUserInfo.LastName,
+                    Email = latestUserInfo.Email,
+                    created_at = latestUserInfo.created_at
+                }
+            };
+
+            var rabbitMQService = new RabbitMQService();
+            string queueName = "UserDeleteQueue";
+            rabbitMQService.SendMessage(queueName,JsonSerializer.Serialize(mergedObject));
+            rabbitMQService.Close();
+        }
+        else
+        {
+            return StatusCode(500, "Failed to update the database. Please check your connection and try again.");
+        }*/
+
+        return Ok("User was deleted");
+    }
+    
+    
     /// <summary>
     /// GenerateToken method for the AuthApiController
     /// </summary>

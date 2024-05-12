@@ -18,6 +18,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
+builder.Services.AddHostedService<DeleteUsersService>();
 builder.Services.AddSingleton(new JwtService(Env.GetString("JWT_SECRET")));
 builder.Services.AddDbContext<DlsUsersContext>(options =>
     options.UseSqlServer(
