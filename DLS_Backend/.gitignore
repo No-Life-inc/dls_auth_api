@@ -1,4 +1,4 @@
-# Created by https://www.toptal.com/developers/gitignore/api/jetbrains,csharp,visualstudio,visualstudiocode
+﻿# Created by https://www.toptal.com/developers/gitignore/api/jetbrains,csharp,visualstudio,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=jetbrains,csharp,visualstudio,visualstudiocode
 
 ### Csharp ###
@@ -407,7 +407,6 @@ FodyWeavers.xsd
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
-.idea
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -421,6 +420,7 @@ FodyWeavers.xsd
 .idea/**/contentModel.xml
 
 # Sensitive or high-churn files
+.idea 
 .idea/**/dataSources/
 .idea/**/dataSources.ids
 .idea/**/dataSources.local.xml

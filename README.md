@@ -20,10 +20,15 @@ This repo is divided into seperate folders with separate responsibilities:
 
 Create a .env in the root folder.
 
-- JWT_SECRET='2b13d563f605b3bb6b5f43ec95a2aaeef1d780049d91d62e0d7c04d70d46de44'
-- RABBITMQ_HOST='localhost'
-- RABBITMQ_USERNAME='user'
-- RABBITMQ_PASSWORD='password'
+- JWT_SECRET='MmIxM2Q1NjNmNjA1YjNiYjZiNWY0M2VjOTVhMmFhZWVmMWQ3ODAwNDlkOTFkNjJlMGQ3YzA0ZDcwZDQ2ZGU0NA=='
+- RABBITURL='localhost'
+- RABBITUSER='user'
+- RABBITPW='password'
+- DB_SERVER='localhost,1434'
+- DB_BACKEND='usersDb'
+- DB_USER='SA'
+- DB_PASSWORD='YourStrongPassword123'
+- FRONTENDURL='http://localhost:8080'
 
 ## How To Run
 
@@ -39,11 +44,24 @@ For Visual Studio, open a terminal and run following each line seperate:
 Make sure to have dotnet installed.
 For Jetbrains Rider, open a terminal and run following each line seperate: 
 
+<<<<<<< HEAD
  - dotnet tool install --global dotnet-ef
  - dotnet ef --version
  - dotnet add package Microsoft.EntityFrameworkCore.Design
  - dotnet ef migrations add InitialCreate
  - dotnet ef database update
+=======
+Make sure you have the Entity Framework installed
+ - dotnet tool install --global dotnet-ef
+ - dotnet ef --version
+You can add EntityFrameworkCore.Design like this, but you have to make sure it is version 8.2. anything after this might distrupt the EF at this point in time. 
+ - dotnet add package Microsoft.EntityFrameworkCore.Design
+If you want to take the data from the database and create a migration file from it:
+ - dotnet ef migrations add YourMigrationName --context DlsUserContext
+To update the database with a migration file: 
+ - dotnet ef database update --context DlsUserContext
+If there are any error this code will help show what the mistake might be:
+>>>>>>> development
  - dotnet build
 
 ## Dependencies

@@ -1,0 +1,69 @@
+﻿name: .NET Core CI
+
+on:
+  push:
+    branches: [ development, main]
+  pull_request:
+    branches: [ development, main]
+
+jobs:
+  build:
+    
+    runs-on: ubuntu-latest
+    
+    services:
+      rabbitmq:
+        image: rabbitmq:3-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+
+      
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          SA_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ACCEPT_EULA: "Y"
+        ports:
+          - 1433:1433  # Default SQL Server port
+        options: >-
+          --name=mssql
+          --hostname=mssql
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check SQL Server logs
+        run: docker logs mssql
+      
+      
+      - name: Test SQL Server connection
+        run: |
+          docker run --network container:mssql --rm mcr.microsoft.com/mssql-tools /opt/mssql-tools/bin/sqlcmd -S mssql,1433 -U SA -P "${{ secrets.DB_PASSWORD }}" -Q "SELECT 1"
+          
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.203'  # Ensure this version matches your project requirements
+
+ 
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }} 
+          RABBITUSER: ${{ secrets.RABBITUSER }}
+          RABBITPW: ${{ secrets.RABBITPW }}
+          RABBITURL: ${{ secrets.RABBITURL }}
+          DB_SERVER: ${{ secrets.DB_SERVER }}
+          DB_BACKEND: ${{ secrets.DB_BACKEND }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          FRONTENDURL: ${{ secrets.FRONTENDURL }}
+          GITHUB_ACTIONS: true

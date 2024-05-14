@@ -1,13 +1,68 @@
-var builder = WebApplication.CreateBuilder(args);
+using DLS_Backend.Controller;
+using DLS_Backend.utility;
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Load environment variables from .env file
+Env.Load();
+
+var builder = WebApplication.CreateBuilder(args);
+Hashing hash = new Hashing();
+
+// Continue with your service configuration
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DLS Backend API", Version = "v1" });
+});
+builder.Services.AddHttpClient();
+builder.Services.AddControllers();
+builder.Services.AddSingleton(new JwtService(Env.GetString("JWT_SECRET")));
+builder.Services.AddDbContext<DlsUsersContext>(options =>
+    options.UseSqlServer(
+        $"Server={Environment.GetEnvironmentVariable("DB_SERVER")};" +
+        $"Database={Environment.GetEnvironmentVariable("DB_BACKEND")};" +
+        $"User Id={Environment.GetEnvironmentVariable("DB_USER")};" +
+        $"Password={Environment.GetEnvironmentVariable("DB_PASSWORD")};" +
+        "TrustServerCertificate=True;"
+    )
+);
+
+
+
+// Configure CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin", corsbuilder =>
+    {
+        corsbuilder.WithOrigins(Environment.GetEnvironmentVariable("FRONTENDURL")) // Tilpas domænet til din frontend
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Migrate any pending changes to the database before running the app
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<DlsUsersContext>();
+        context.Database.Migrate(); // This will apply pending migrations
+    }
+    catch (Exception ex)
+    {
+        // Log errors or handle them as needed
+        throw;
+    }
+}
+
+// Enable CORS
+app.UseCors("AllowOrigin");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -15,30 +70,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
+app.MapControllers();
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+public partial class Program { }
