@@ -1,4 +1,5 @@
-﻿using DLS_Backend.Controller;
+﻿using System.Text.Json;
+using DLS_Backend.Controller;
 using Microsoft.EntityFrameworkCore;
 
 namespace DLS_Backend.utility;
@@ -25,6 +26,9 @@ public class DeleteUsersService : BackgroundService
                     .Where(u => u.IsDeleted && u.DeletionDate <= DateTime.Now.AddSeconds(-14))
                     .ToList();
 
+                // List to store the GUIDs of the deleted users
+                var deletedUserGuids = new List<Guid>();
+                
                 // Delete the actual User records
                 foreach (var userTombstone in usersToDelete)
                 {
@@ -33,6 +37,9 @@ public class DeleteUsersService : BackgroundService
                         .FirstOrDefaultAsync(u => u.id == userTombstone.UserId);
                     if (user != null)
                     {
+                        // Add the user's GUID to the list
+                        deletedUserGuids.Add(user.guid);
+
                         context.UserInfo.RemoveRange(user.UserInfos); // Delete the related UserInfo records
                         context.Users.Remove(user);
                     }
@@ -42,9 +49,20 @@ public class DeleteUsersService : BackgroundService
                 context.UserTombstones.RemoveRange(usersToDelete);
 
                 await context.SaveChangesAsync();
-            }
 
-            await Task.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+                if (deletedUserGuids.Any())
+                {
+                    var message = JsonSerializer.Serialize(new { user_guid = deletedUserGuids });
+
+                    // Send the message to RabbitMQ
+                    var rabbitMQService = new RabbitMQService();
+                    string queueName = "UserDeleteQueue";
+                    Console.WriteLine(message);
+                    rabbitMQService.SendMessage(queueName, message);
+                    rabbitMQService.Close();
+                }
+            }
+            await Task.Delay(TimeSpan.FromSeconds(30), stoppingToken);
         }
     }
 }

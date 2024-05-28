@@ -126,6 +126,15 @@ public class AuthApiController : ControllerBase
         if (hash.Verify(request.Password, latestUserInfo!.Password))
         {
             var token = _jwtService.GenerateToken(user.guid);
+            
+            var userTombstone = await _context.UserTombstones.FindAsync(user.id);
+            if (userTombstone != null)
+            {
+                // If there is, remove it
+                _context.UserTombstones.Remove(userTombstone);
+                await _context.SaveChangesAsync();
+            }
+            
             return Ok(new { token, user = new {userGuid = user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
         }
         return Unauthorized();
