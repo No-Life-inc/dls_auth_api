@@ -44,13 +44,6 @@ For Visual Studio, open a terminal and run following each line seperate:
 Make sure to have dotnet installed.
 For Jetbrains Rider, open a terminal and run following each line seperate: 
 
-<<<<<<< HEAD
- - dotnet tool install --global dotnet-ef
- - dotnet ef --version
- - dotnet add package Microsoft.EntityFrameworkCore.Design
- - dotnet ef migrations add InitialCreate
- - dotnet ef database update
-=======
 Make sure you have the Entity Framework installed
  - dotnet tool install --global dotnet-ef
  - dotnet ef --version
@@ -61,7 +54,6 @@ If you want to take the data from the database and create a migration file from 
 To update the database with a migration file: 
  - dotnet ef database update --context DlsUserContext
 If there are any error this code will help show what the mistake might be:
->>>>>>> development
  - dotnet build
 
 ## Dependencies
