@@ -217,15 +217,15 @@ public class AuthApiController : ControllerBase
     
     
     //delete user but adding a tombstone
-    [HttpDelete("delete/{userGuid}")]
-    public async Task<IActionResult> DeleteUser([FromRoute] Guid userGuid, [FromBody] DeleteUserRequest request)
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
     {
         if (!_jwtService.ValidateToken(request.token))
         {
             return Unauthorized();
         }
         //get the user and the latest userinfo by guid
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.guid == userGuid);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.guid == request.guid);
         if (user == null)
         {
             return BadRequest("No user was found");
@@ -247,39 +247,13 @@ public class AuthApiController : ControllerBase
             DeletionDate = DateTime.UtcNow
         };
         
-
         _context.UserTombstones.Add(userTombstone);
         await _context.SaveChangesAsync(); 
-
-
-        /*var numberOfChanges = await _context.SaveChangesAsync();
-        if (numberOfChanges > 0)
-        {
-            var mergedObject = new
-            {
-                user = new
-                {
-                    guid = user.guid,
-                    created_at = user.created_at
-                },
-                userInfo = new
-                {
-                    FirstName = latestUserInfo.FirstName,
-                    LastName = latestUserInfo.LastName,
-                    Email = latestUserInfo.Email,
-                    created_at = latestUserInfo.created_at
-                }
-            };
-
-            var rabbitMQService = new RabbitMQService();
-            string queueName = "UserDeleteQueue";
-            rabbitMQService.SendMessage(queueName,JsonSerializer.Serialize(mergedObject));
-            rabbitMQService.Close();
-        }
-        else
-        {
-            return StatusCode(500, "Failed to update the database. Please check your connection and try again.");
-        }*/
+        
+        var rabbitMQService = new RabbitMQService();
+        string queueName = "UserAnonymizeQueue";
+        rabbitMQService.SendMessage(queueName,JsonSerializer.Serialize(new { user_guid = user.guid }));
+        rabbitMQService.Close();
 
         return Ok("User was deleted");
     }
