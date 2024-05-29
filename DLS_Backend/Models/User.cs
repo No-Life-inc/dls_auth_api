@@ -16,7 +16,8 @@ public partial class User
     public Guid guid  { get; set; }
     public DateTime? created_at { get; set; }
     public ICollection<UserInfo> UserInfos { get; set; }
-
+    public UserTombstone UserTombstone { get; set; }
+    
 }
 
 

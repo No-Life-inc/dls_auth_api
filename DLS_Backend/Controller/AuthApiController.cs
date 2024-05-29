@@ -126,6 +126,15 @@ public class AuthApiController : ControllerBase
         if (hash.Verify(request.Password, latestUserInfo!.Password))
         {
             var token = _jwtService.GenerateToken(user.guid);
+            
+            var userTombstone = await _context.UserTombstones.FindAsync(user.id);
+            if (userTombstone != null)
+            {
+                // If there is, remove it
+                _context.UserTombstones.Remove(userTombstone);
+                await _context.SaveChangesAsync();
+            }
+            
             return Ok(new { token, user = new {userGuid = user.guid, latestUserInfo.Email, latestUserInfo.FirstName, latestUserInfo.LastName}});
         }
         return Unauthorized();
@@ -205,6 +214,50 @@ public class AuthApiController : ControllerBase
 
         return Ok("User was updated");
     }
+    
+    
+    //delete user but adding a tombstone
+    [HttpDelete("delete")]
+    public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
+    {
+        if (!_jwtService.ValidateToken(request.token))
+        {
+            return Unauthorized();
+        }
+        //get the user and the latest userinfo by guid
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.guid == request.guid);
+        if (user == null)
+        {
+            return BadRequest("No user was found");
+        }
+
+        var latestUserInfo = await _context.LatestUserInfosView
+            .FirstOrDefaultAsync(u => u.UserId == user.id);
+
+        //need to validate the password
+        if (!hash.Verify(request.password, latestUserInfo.Password))
+        {
+            return Unauthorized();
+        }
+        
+        var userTombstone = new UserTombstone
+        {
+            UserId = user.id,
+            IsDeleted = true,
+            DeletionDate = DateTime.UtcNow
+        };
+        
+        _context.UserTombstones.Add(userTombstone);
+        await _context.SaveChangesAsync(); 
+        
+        var rabbitMQService = new RabbitMQService();
+        string queueName = "UserAnonymizeQueue";
+        rabbitMQService.SendMessage(queueName,JsonSerializer.Serialize(new { user_guid = user.guid }));
+        rabbitMQService.Close();
+
+        return Ok("User was deleted");
+    }
+    
     
     /// <summary>
     /// GenerateToken method for the AuthApiController

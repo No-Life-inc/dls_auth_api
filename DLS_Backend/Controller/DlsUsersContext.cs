@@ -21,6 +21,8 @@ public partial class DlsUsersContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public DbSet<UserInfo> UserInfo { get; set; }
     public DbSet<LatestUserInfo> LatestUserInfosView { get; set; }
+    
+    public DbSet<UserTombstone> UserTombstones { get; set; }
 
     
     /// <summary>
@@ -51,6 +53,17 @@ public partial class DlsUsersContext : DbContext
                 .HasConstraintName("FK_UserInfo_Users_UserId");
         });
         modelBuilder.Entity<LatestUserInfo>().HasNoKey();
+        
+        modelBuilder.Entity<UserTombstone>(entity =>
+        {
+            entity.HasKey(e => e.UserId);
+            entity.Property(e => e.IsDeleted);
+            entity.Property(e => e.DeletionDate);
+
+            entity.HasOne(d => d.User)
+                .WithOne(p => p.UserTombstone)
+                .HasForeignKey<UserTombstone>(d => d.UserId);
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
